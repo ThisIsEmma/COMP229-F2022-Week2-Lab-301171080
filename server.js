@@ -1,7 +1,34 @@
-const connect = require('connect');
+//const connect = require('connect');  WE DELETED CONNECTED AND ALSO require() is under commonJS. NOw we will be using ES6 therefore see below
+
+import express from 'express'; //This is what we should have under ES6 in order to import
+                                // Also if using ES6, make sure to add "type":"module",  in package.json (can go anywhere but added below main)
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import session from 'express-session';
+
+// ES Modules fix for __dirname
+import path, {dirname} from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 
 //instantiate app-server
-const app = connect();
+const app = express();
+
+//Set up ViewEngine EJS
+app.set('views', path.join(__dirname, '/views'));
+app.set('view engine', 'ejs');
+
+app.use(logger('dev'));
+app.use(express.json())
+app.use(express.urlencoded({ extended: false}));
+app.use(cookieParser());
+app.use(express.static(path.join(_dirname,'../public')));
+app.use(session({
+    secret: 'MySecret',
+    saveUninitialized: false,
+    resave: false
+}))
 
 //custom middleware
 function jSon(req,res,next){
